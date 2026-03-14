@@ -1,38 +1,30 @@
-from flask import Flask, render_template, request
-from scapy.all import *
-import threading
-import os
+from flask import Flask, render_template
+import random
 
 app = Flask(__name__)
 
-packets_data = []
+# Mock packet data for demo
+mock_packets = [
+    "Ether / IP / TCP 192.168.1.1:80 > 192.168.1.2:12345",
+    "Ether / IP / UDP 10.0.0.1:53 > 10.0.0.2:5353",
+    "Ether / IP / ICMP 172.16.0.1 > 172.16.0.2",
+    "Ether / ARP who has 192.168.1.2 says 192.168.1.1",
+    "Ether / IP / TCP 192.168.1.2:12345 > 192.168.1.1:80"
+]
 
-def analyze_packet(packet):
-    if packet.haslayer(IP):
-        packet_info = {
-            'src': packet[IP].src,
-            'dst': packet[IP].dst,
-            'proto': packet[IP].proto
-        }
-        packets_data.append(packet_info)
+packets = []
 
 @app.route('/')
-def index():
-    return render_template('index.html', packets=packets_data)
+def home():
+    return render_template("index.html", packets=packets)
 
-@app.route('/analyze', methods=['GET', 'POST'])
-def analyze():
-    global packets_data
-    packets_data = []
-    count = int(request.form.get('count', 10)) if request.method == 'POST' else 10
-    # Run sniff in a thread to avoid blocking
-    def sniff_packets():
-        sniff(prn=analyze_packet, count=count, store=0)
-    thread = threading.Thread(target=sniff_packets)
-    thread.start()
-    thread.join()  # Wait for completion
-    return render_template('index.html', packets=packets_data)
+@app.route('/start')
+def start():
+    # Generate mock packets instead of real sniffing
+    packets.clear()
+    for _ in range(random.randint(5, 15)):
+        packets.append(random.choice(mock_packets))
+    return render_template("index.html", packets=packets)
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
