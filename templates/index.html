@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Packet Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Network Packet Analyzer</h1>
-    <form action="/analyze" method="post">
-        <label for="count">Number of packets to capture:</label>
-        <input type="number" id="count" name="count" value="10" min="1" max="100">
-        <button type="submit">Start Packet Analysis</button>
-    </form>
-    <h2>Packets:</h2>
-    <ul>
-        {% for packet in packets %}
-        <li>Source: {{ packet.src }}, Destination: {{ packet.dst }}, Protocol: {{ packet.proto }}</li>
-        {% endfor %}
-    </ul>
+
+<h1>Network Packet Analyzer</h1>
+
+<form action="/start" method="POST">
+    <label>Number of packets:</label>
+    <input type="number" name="num_packets" value="5">
+    <button type="submit">Start Packet Analysis</button>
+</form>
+
+<h2>Captured Packets</h2>
+
+<ul>
+{% for packet in packets %}
+    <li>{{ packet }}</li>
+{% endfor %}
+</ul>
+
 </body>
 </html>
