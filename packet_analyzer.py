@@ -15,6 +15,7 @@ def home():
 def start():
 
     packets.clear()
+
     num_packets = int(request.form.get("num_packets", 10))
 
     # Demo packet data (used instead of real sniffing)
