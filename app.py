@@ -67,11 +67,22 @@ def start_capture():
         try:
             sniff_thread = threading.Thread(target=lambda: sniff(prn=packet_callback, store=0, stop_filter=lambda x: not capturing))
             sniff_thread.start()
+            # For testing, also start simulation if no packets after 5 seconds
+            threading.Timer(5.0, check_and_simulate).start()
         except Exception as e:
             print(f"Packet capture failed: {e}. Using simulation.")
             # Fallback to simulation
             sniff_thread = threading.Thread(target=simulate_packets)
             sniff_thread.start()
+
+def check_and_simulate():
+    """
+    Check if packets are captured; if not, simulate.
+    """
+    if len(packets) == 0 and capturing:
+        print("No packets captured, using simulation.")
+        simulate_thread = threading.Thread(target=simulate_packets)
+        simulate_thread.start()
 
 def stop_capture():
     """
